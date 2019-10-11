@@ -25,21 +25,26 @@ func main(){
 		}
 		os.Exit(1)
 	}
+	defer conn.Close()
+	go udpRecv(conn);
 	//判断windows
 	if(runtime.GOOS=="windows"){
 		notify.GuiInit();
 	}
-	defer conn.Close()
+
+}
+
+func udpRecv(conn *net.UDPConn){
 	for {
 		// Here must use make and give the lenth of buffer
 		data := make([]byte,1024)
-		_, _, err := conn.ReadFromUDP(data)
+		len, _, err := conn.ReadFromUDP(data)
 		if err != nil {
 			fmt.Println(err)
 			continue
 		}
 		jsonData := make(map[string]interface{})
-		err = json.Unmarshal(data, &jsonData)
+		err = json.Unmarshal(data[:len], &jsonData)
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -51,7 +56,6 @@ func main(){
 				mac=_mac;
 			}
 		}
-
 		var ip  =""
 		if value, ok := jsonData["ip"]; ok {
 			_ip, ok1 := value.(string)
@@ -67,6 +71,7 @@ func main(){
 				lip=_lip;
 			}
 		}
+		fmt.Println("wakeUp ---  mac:"+mac+"ip:"+ip)
 		wakeUp(mac,ip,lip);
 	}
 }
@@ -81,7 +86,7 @@ func wakeUp(macAddr string, ip string,lip string) bool{
 		ip="192.168.6.255"
 	}
 	if(lip==""){
-		ip="192.168.6.221"
+		lip="192.168.6.221"
 	}
 
 	//生成魔术包结构，
