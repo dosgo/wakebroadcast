@@ -20,6 +20,9 @@ func main(){
 	conn, err := net.ListenUDP("udp", addr)
 	if err != nil {
 		fmt.Println(err)
+		if(runtime.GOOS=="windows") {
+			notify.MsgBox("信息","端口被占用程序已经在运行了!");
+		}
 		os.Exit(1)
 	}
 	//判断windows

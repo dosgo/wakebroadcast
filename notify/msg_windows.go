@@ -6,15 +6,24 @@ import (
 	"github.com/lxn/walk"
 	_"github.com/lxn/walk"
 	"log"
-
+	"os"
 )
+var mw *walk.MainWindow
 
-
-func GuiInit()  {
-	mw, err := walk.NewMainWindow()
+func init(){
+	var err error
+	mw,  err= walk.NewMainWindow()
 	if err != nil {
 		log.Fatal(err)
+		os.Exit(0)
 	}
+}
+
+func MsgBox(title string,msg string ){
+	walk.MsgBox(mw, title, msg, walk.MsgBoxIconInformation)
+}
+
+func GuiInit()  {
 	//托盘图标文件
 	icon, err := walk.Resources.Icon("./icon.ico")
 	if err != nil {
@@ -28,7 +37,7 @@ func GuiInit()  {
 	if err := ni.SetIcon(icon); err != nil {
 		log.Fatal(err)
 	}
-	if err := ni.SetToolTip("唤醒广播转发服务正在运行中。。。"); err != nil {
+	if err := ni.SetToolTip("唤醒广播转发服务运行中"); err != nil {
 		log.Fatal(err)
 	}
 
@@ -36,7 +45,7 @@ func GuiInit()  {
 		if button != walk.LeftButton {
 			return
 		}
-		if err := ni.ShowCustom("正在运行","右键退出",icon); err != nil {
+		if err := ni.ShowInfo("唤醒广播转发服务运行中","右键退出"); err != nil {
 			log.Fatal(err)
 		}
 	})
