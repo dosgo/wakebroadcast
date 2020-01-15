@@ -11,7 +11,7 @@ import (
 	"runtime"
 )
 func main(){
-	address := "0.0.0.0:666"
+	address := "0.0.0.0:6666"
 	addr, err := net.ResolveUDPAddr("udp", address)
 	if err != nil {
 		fmt.Println(err)
@@ -22,6 +22,8 @@ func main(){
 		fmt.Println(err)
 		if(runtime.GOOS=="windows") {
 			notify.MsgBox("信息","端口被占用程序已经在运行了!");
+		}else{
+			fmt.Printf("端口被占用程序已经在运行了!")
 		}
 		os.Exit(1)
 	}
@@ -30,8 +32,11 @@ func main(){
 	//判断windows
 	if(runtime.GOOS=="windows"){
 		notify.GuiInit();
-	}
+	}else{
+		select{
 
+		}
+	}
 }
 
 func udpRecv(conn *net.UDPConn){
