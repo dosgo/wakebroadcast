@@ -11,7 +11,7 @@ import (
 	"runtime"
 )
 func main(){
-	address := "0.0.0.0:6666"
+	address := "0.0.0.0:6661"
 	addr, err := net.ResolveUDPAddr("udp", address)
 	if err != nil {
 		fmt.Println(err)
