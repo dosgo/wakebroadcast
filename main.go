@@ -44,7 +44,7 @@ func udpRecv(conn *net.UDPConn){
 	for {
 		// Here must use make and give the lenth of buffer
 		data := make([]byte,1024)
-		len, _, err := conn.ReadFromUDP(data)
+		len, rAddr, err := conn.ReadFromUDP(data)
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -79,9 +79,13 @@ func udpRecv(conn *net.UDPConn){
 		}
 		fmt.Println("wakeUp ---  mac:"+mac+"ip:"+ip)
 		err=wakeUp(mac,ip,lip);
+		var  code=0;
 		if(err!=nil){
 			log.Printf("err:%v\r\n",err)
+			code=1;
 		}
+		back:=fmt.Sprintf("{\"code\":%d,\"msg\":\"\"}",code);
+		conn.WriteTo([]byte(back),rAddr)
 	}
 }
 
