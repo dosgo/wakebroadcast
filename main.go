@@ -2,8 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/sabhiram/go-wol"
+	"github.com/sabhiram/go-wol/wol"
 	"log"
 	"net"
 	"wakebroadcast/notify"
@@ -77,15 +78,17 @@ func udpRecv(conn *net.UDPConn){
 			}
 		}
 		fmt.Println("wakeUp ---  mac:"+mac+"ip:"+ip)
-		wakeUp(mac,ip,lip);
+		err=wakeUp(mac,ip,lip);
+		if(err!=nil){
+			log.Printf("err:%v\r\n",err)
+		}
 	}
 }
 
 
-func wakeUp(macAddr string, ip string,lip string) bool{
+func wakeUp(macAddr string, ip string,lip string) error{
 	if(macAddr==""){
-		log.Println("mac null")
-		return false
+		return errors.New("mac null")
 	}
 	if(ip==""){
 		ip="192.168.6.255"
@@ -97,23 +100,25 @@ func wakeUp(macAddr string, ip string,lip string) bool{
 	//生成魔术包结构，
 	mp, err := wol.New(macAddr)
 	if err != nil {
-		return false;
+		return err;
 	}
 	bs, err := mp.Marshal()
 	if err != nil {
-		return false;
+		return err;
 	}
 	//laddr, err := net.ResolveUDPAddr("udp4", lip+":7777");
 	// 这里设置接收者的IP地址为广播地址
-	raddr, err := net.ResolveUDPAddr("udp4", ip+":9");
+	raddr, err := net.ResolveUDPAddr("udp4", ip+":7777");
+	if err != nil {
+		return err;
+	}
 	conn, err := net.DialUDP("udp", nil, raddr)
 	if err != nil {
-		println(err.Error())
-		return false;
+		return err;
 	}
 	conn.Write(bs)
 	conn.Close()
-	return true;
+	return nil;
 }
 
 
